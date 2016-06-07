@@ -6,6 +6,7 @@ var AppointmentsSchema = new mongoose.Schema({
 	address: String,
 	notes: String,
 	paid: Boolean,
+	maidpaid: Boolean,
 });
 
 mongoose.model('Appointments', AppointmentsSchema);

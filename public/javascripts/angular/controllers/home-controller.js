@@ -97,6 +97,7 @@ angular.module('cleaningDashboard').controller('HomeCtrl', [
     		{field: 'date', name: 'Appointment (yyyy-mm-dd)', cellFilter: 'formatDateTime', enableCellEdit: false, pinnedLeft: true, width: '15%'},
     		{field: 'address', name: 'Address', enableCellEdit: false, width: '25%'},
     		{field: 'paid', name: 'Paid', width: '10%'},
+    		{field: 'maidpaid', name: 'Maid Paid', width: '10%'},
     		{field: 'notes', name: 'Notes', enableCellEdit: false, width: '50%'},
 			// {field: 'project', name: 'Project', cellTemplate: '/partials/project.html', enableCellEdit: false, pinnedLeft: true, width: 100},
 			// {field: 'releaseName', name: 'Release Name', pinnedLeft: true, width: 100, cellEditableCondition: function(){return $scope.isLoggedIn()}},
@@ -155,6 +156,10 @@ function editAppointmentCtrl($scope, $uibModalInstance, service, grid, row, getC
 				type: 'boolean',
 				title: 'Paid',
 			},
+			maidpaid: {
+				type: 'boolean',
+				title: 'Maid Paid',
+			},
 			notes: {type: 'string', title: 'Notes'},
 		},
 		required: [
@@ -171,6 +176,7 @@ function editAppointmentCtrl($scope, $uibModalInstance, service, grid, row, getC
 		},
 		'address',
 		'paid',
+		'maidpaid',
 		{
 			'key': 'notes',
 			'type': 'textarea',
@@ -532,6 +538,10 @@ function createAppointmentCtrl($scope, $uibModalInstance, service, getClientName
 				type: 'boolean',
 				title: 'Paid',
 			},
+			maidpaid: {
+				type: 'boolean',
+				title: 'Maid Paid',
+			},
 			notes: {type: 'string', title: 'Notes'},
 		},
 		required: [
@@ -548,6 +558,7 @@ function createAppointmentCtrl($scope, $uibModalInstance, service, getClientName
 		},
 		'address',
 		'paid',
+		'maidpaid',
 		{
 			'key': 'notes',
 			'type': 'textarea',

@@ -36,6 +36,7 @@ router.post('/appointments', function(req, res) {
 		date: req.body.date,
 		address: req.body.address,
 		paid: req.body.paid,
+		maidpaid: req.body.maidpaid,
 		notes: req.body.notes,
 	}
 
@@ -56,6 +57,7 @@ router.put('/appointments/:appointment', function(req, res){
 		'date': req.body.date,
 		'address': req.body.address,
 		'paid': req.body.paid,
+		'maidpaid': req.body.maidpaid,
 		'notes': req.body.notes,
 	}}, function(err, appointment){
 		if(err){console.log(err);}
