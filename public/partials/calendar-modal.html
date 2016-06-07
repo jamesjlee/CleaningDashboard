@@ -1,0 +1,53 @@
+<div>
+  <div class="modal-header">
+      <h3 class="modal-title">Calendar</h3>
+      <div class="btn-group" style="float: left;">
+        <button
+          class="btn btn-primary"
+          mwl-date-modifier
+          date="calendarDate"
+          decrement="calendarView">
+          Previous
+        </button>
+        <button
+          class="btn btn-default"
+          mwl-date-modifier
+          date="calendarDate"
+          set-to-today>
+          Today
+        </button>
+        <button
+          class="btn btn-primary"
+          mwl-date-modifier
+          date="calendarDate"
+          increment="calendarView">
+          Next
+        </button>
+      </div>
+      <div class="btn-group" style="float: right;">
+        <label class="btn btn-primary" ng-model="calendarView" uib-btn-radio="'year'">Year</label>
+        <label class="btn btn-primary" ng-model="calendarView" uib-btn-radio="'month'">Month</label>
+        <label class="btn btn-primary" ng-model="calendarView" uib-btn-radio="'week'">Week</label>
+        <label class="btn btn-primary" ng-model="calendarView" uib-btn-radio="'day'">Day</label>
+      </div>
+  </div>
+  <div class="modal-body">
+    <h2 class="text-center">{{calendarTitle}}</h2>
+    <mwl-calendar
+      view="calendarView"
+      view-date="calendarDate"
+      events="events"
+      view-title="calendarTitle"
+      on-event-click="eventClicked(calendarEvent)"
+      on-event-times-changed="calendarEvent.startsAt = calendarNewEventStart; calendarEvent.endsAt = calendarNewEventEnd"
+      edit-event-html="'<i class=\'glyphicon glyphicon-pencil\'></i>'"
+      delete-event-html="'<i class=\'glyphicon glyphicon-remove\'></i>'"
+      on-edit-event-click="eventEdited(calendarEvent)"
+      on-delete-event-click="eventDeleted(calendarEvent)"
+      cell-is-open="true">
+    </mwl-calendar>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" ng-click="$close()">Close</button>
+  </div>
+</div>

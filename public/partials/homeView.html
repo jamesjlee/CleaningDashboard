@@ -1,0 +1,39 @@
+<div class="nav_menu" style="position: fixed; z-index: 3;">
+	<nav class="" role="navigation">
+		<div class="nav toggle">
+			<a id="menu_toggle" href="#"><i class="fa fa-home" style="color: #fff"></i></a>
+		</div>
+		<div class="nav toggle page-top-title">
+			<span><b>Cleaning Dashboard</b></span>
+		</div>
+	</nav>
+</div>
+
+<div class="right_col" role="main">
+	<div id="main_table" class="row">
+		<div class="col-md-12 col-sm-12 col-xs-12">
+			<div class="col-md-12">
+				<div class="x_panel">
+					<div class="x_title">
+						<h3><span style="font-size: 18px;">Upcoming Appointments</span>
+						<button style="float:right" type="button" class="btn btn-md btn-primary" ng-click="createAppointment()">
+						    <i class="fa fa-plus"> Create Appointment</i>
+						</button>
+						<button style="float:right" type="button" class="btn btn-md btn-primary" ng-click="createClient()">
+						    <i class="fa fa-plus"> Create Client</i>
+						</button>
+						<button style="float:right" type="button" class="btn btn-md btn-primary" ng-click="createMaid()">
+						    <i class="fa fa-plus"> Create Maid</i>
+						</button>
+					</div>
+					<div id="grid1" ui-grid="gridOptions" class="grid" ui-grid-edit ui-grid-pagination ui-grid-resize-columns ui-grid-pinning ui-grid-move-columns></div>
+					<div id="gridErrorAlert" ng-show="homeError" class="alert alert-danger row" style="text-align: center;">
+						<i class="fa fa-exclamation-circle"></i>
+						<span>{{ homeError }}</span>
+						<i class="fa fa-times" ng-click="hideErrorAlert()" style="float: right"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
