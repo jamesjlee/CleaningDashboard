@@ -112,8 +112,8 @@ router.post('/maids', function(req, res) {
 	var maid = new Maids(maidJSON);
 	var query = Maids.find({name: req.body.name});
 	query.exec(function(err, returnedMaid){
-		if(returnedMaid === 0) {
-		maid.save(function(err, returnedMaid){
+		if(returnedMaid.length === 0) {
+			maid.save(function(err, returnedMaid){
 				// res.json({message: 'Record saved'});
 				res.json(returnedMaid);
 			});

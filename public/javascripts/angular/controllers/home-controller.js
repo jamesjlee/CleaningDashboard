@@ -226,7 +226,7 @@ function createMaidCtrl($scope, $uibModalInstance, service) {
 		$scope.$broadcast('schemaFormValidate');
 		if (form.$valid) {
 			service.createMaid($scope.entity).then(function(result){
-				console.log(result);
+				// console.log(result);
 				if(result.data.message === "Maid already exists!") {
 					$('#createMaidModalError').show();
 					$scope.error = 'Maid already exists! Please choose another maid name.';
