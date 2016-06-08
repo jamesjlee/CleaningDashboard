@@ -15,7 +15,7 @@
 			<div class="col-md-12">
 				<div class="x_panel">
 					<div class="x_title">
-						<h3><span style="font-size: 18px;">Upcoming Appointments</span>
+						<h3><span style="font-size: 18px;">Appointments</span>
 						<button style="float:right" type="button" class="btn btn-md btn-primary" ng-click="createAppointment()">
 						    <i class="fa fa-plus"> Create Appointment</i>
 						</button>
@@ -24,6 +24,9 @@
 						</button>
 						<button style="float:right" type="button" class="btn btn-md btn-primary" ng-click="createMaid()">
 						    <i class="fa fa-plus"> Create Maid</i>
+						</button>
+						<button style="float:right" type="button" class="btn btn-md btn-primary" ng-click="showCalendar()">
+						    <i class="fa fa-calendar"> Calendar</i>
 						</button>
 					</div>
 					<div id="grid1" ui-grid="gridOptions" class="grid" ui-grid-edit ui-grid-pagination ui-grid-resize-columns ui-grid-pinning ui-grid-move-columns></div>

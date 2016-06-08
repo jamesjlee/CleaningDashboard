@@ -139,6 +139,7 @@ angular.module('cleaningDashboard').factory('service', [
 							o.clients[i].cleaningSchedule = data.cleaningSchedule;
 							o.clients[i].requestedMaid = data.requestedMaid;
 							o.clients[i].credit = data.credit;
+							o.clients[i].notes = data.notes;
 							break;
 						}
 					}

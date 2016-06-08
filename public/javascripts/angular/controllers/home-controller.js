@@ -10,12 +10,15 @@ angular.module('cleaningDashboard').controller('HomeCtrl', [
 		$scope.editAppointment = function(grid, row) {
 			$uibModal.open({
 			  templateUrl: '/partials/edit-appointment-modal.html',
-			  controller: ['$scope', '$uibModalInstance', 'service', 'grid', 'row', 'getClientNames', editAppointmentCtrl],
+			  controller: ['$scope', '$uibModalInstance', 'service', 'grid', 'row', 'getClientNames', '$http', 'getMaids', editAppointmentCtrl],
 			  resolve: {
 			    grid: function () { return grid; },
 			    row: function () { return row; },
 			    getClientNames: ['service', function(service){
 					return service.getClients();
+				}],
+				getMaids:  ['service', function(service){
+					return service.getMaids();
 				}],
 			  }
 			});
@@ -24,7 +27,7 @@ angular.module('cleaningDashboard').controller('HomeCtrl', [
 		$scope.deleteAppointment = function(grid, row){ 
 			$uibModal.open({
 			  templateUrl: '/partials/delete-appointment-modal.html',
-			  controller: ['$scope', '$uibModalInstance', 'service', 'grid', 'row', deleteAppointmentCtrl],
+			  controller: ['$scope', '$uibModalInstance', 'service', 'grid', 'row', '$http', deleteAppointmentCtrl],
 			  resolve: {
 			    grid: function () { return grid; },
 			    row: function () { return row; }
@@ -35,10 +38,13 @@ angular.module('cleaningDashboard').controller('HomeCtrl', [
 		$scope.createAppointment = function() {
 			$uibModal.open({
 		      templateUrl: '/partials/create-appointment-modal.html',
-		      controller: ['$scope', '$uibModalInstance', 'service', 'getClientNames', createAppointmentCtrl],
+		      controller: ['$scope', '$uibModalInstance', 'service', 'getClientNames', 'getMaids', createAppointmentCtrl],
 		      resolve: {
 		      	getClientNames:  ['service', function(service){
 					return service.getClients();
+				}],
+				getMaids:  ['service', function(service){
+					return service.getMaids();
 				}],
 		      }
 		    });
@@ -81,6 +87,24 @@ angular.module('cleaningDashboard').controller('HomeCtrl', [
 		      controller: ['$scope', '$uibModalInstance', 'service', createMaidCtrl]
 		    });
 		}
+
+		$scope.showCalendar = function() {
+			$uibModal.open({
+		  		templateUrl: '/partials/main-calendar-modal.html',
+		  		controller: ['$scope', '$rootScope', 'service', '$uibModalInstance', 'clients', 'appointments', mainCalendarCtrl],
+		  		resolve: {
+		  			// clientAssetGrid: function () { return $scope.grid; },
+					// clientAssetRow: function () { return $scope.row; },
+					// clientInfo: function () {return $scope.clientInfo; }
+					clients:  ['service', function(service){
+						return service.getClients();
+					}],
+					appointments:  ['service', function(service){
+						return service.getAppointments();
+					}],
+		  		}
+		  	});
+		}
 		$scope.gridOptions = {
 			paginationPageSizes: [25, 50, 75],
 	    	paginationPageSize: 25,
@@ -94,29 +118,14 @@ angular.module('cleaningDashboard').controller('HomeCtrl', [
 	    columnDefs: [
 			{field: 'buttons', name: '', cellTemplate: '/partials/buttons.html', enableCellEdit: false, enableFiltering: false, pinnedLeft: true, width: 65},
     		{field: 'name', name: 'Name', cellTemplate: '/partials/client-profile-modal.html', enableCellEdit: false, pinnedLeft: true, width: '25%'},
-    		{field: 'date', name: 'Appointment (yyyy-mm-dd)', cellFilter: 'formatDateTime', enableCellEdit: false, pinnedLeft: true, width: '15%'},
+    		{field: 'sharedDate', name: 'Appointment (yyyy-mm-dd)', cellFilter: 'formatDateTime', enableCellEdit: false, pinnedLeft: true, width: '15%'},
     		{field: 'address', name: 'Address', enableCellEdit: false, width: '25%'},
-    		{field: 'paid', name: 'Paid', width: '10%'},
-    		{field: 'maidpaid', name: 'Maid Paid', width: '10%'},
+    		{field: 'maid1', name: 'Maid 1', enableCellEdit: false, width: '10%'},
+    		{field: 'maid2', name: 'Maid 2', enableCellEdit: false, width: '10%'},
+    		{field: 'maid2', name: 'Maid 3', enableCellEdit: false, width: '10%'},
+    		{field: 'paid', name: 'Paid', enableCellEdit: false, width: '10%'},
+    		{field: 'maidpaid', name: 'Maid Paid', enableCellEdit: false, width: '10%'},
     		{field: 'notes', name: 'Notes', enableCellEdit: false, width: '50%'},
-			// {field: 'project', name: 'Project', cellTemplate: '/partials/project.html', enableCellEdit: false, pinnedLeft: true, width: 100},
-			// {field: 'releaseName', name: 'Release Name', pinnedLeft: true, width: 100, cellEditableCondition: function(){return $scope.isLoggedIn()}},
-			// {field: 'type', name: 'Type', width: 110,  enableCellEdit: false},
-			// {field: 'startDate', name: 'Reporting Start Date', cellFilter: 'formatDateTime', width: 110, enableCellEdit: false},
-			// {field: 'endDate', name: 'Reporting End Date', cellFilter: 'formatDateTime', width: 110, enableCellEdit: false},
-			// {field: 'newTestsAutomated', name: 'New Tests Automated', width: 150, cellEditableCondition: function(){return $scope.isLoggedIn()}},
-			// {field: 'manualExecutionTimeNewTests', name:'Manual Execution Time (New Tests)', width: 150, cellEditableCondition: function(){return $scope.isLoggedIn()}},
-			// {field: 'automatedExecutionTimeNewTests', name: 'Automated Execution Time (New Tests)', width: 150, cellEditableCondition: function(){return $scope.isLoggedIn()}},
-			// {field: 'cycleTimeSavingsNewTests', name: 'Cycle Time Savings (New Tests)', width: 150, enableCellEdit: false},
-			// {field: 'maintainedTests', name: 'Maintained Tests', width: 150, cellEditableCondition: function(){return $scope.isLoggedIn()}},
-			// {field: 'manualExecutionTimeMaintainedTests', name: 'Manual Execution Time (Maintained Tests)', width: 150, cellEditableCondition: function(){return $scope.isLoggedIn()}},
-			// {field: 'automatedExecutionTimeMaintainedTests', name: 'Automated Execution Time (Maintained Tests)', width: 150, cellEditableCondition: function(){return $scope.isLoggedIn()}},
-			// {field: 'cycleTimeSavingsMaintainedTests', name: 'Cycle Time Savings (Maintained Tests)', width: 150, enableCellEdit: false},
-			// {field: 'executedTests', name: 'Executed Tests', width: 150, cellEditableCondition: function(){return $scope.isLoggedIn()}},
-			// {field: 'manualExecutionTimeExecutedTests', name: 'Manual Execution Time (Executed Tests)', width: 150, cellEditableCondition: function(){return $scope.isLoggedIn()}},
-			// {field: 'automatedExecutionTimeExecutedTests', name: 'Automated Execution Time (Executed Tests)', width: 150, cellEditableCondition: function(){return $scope.isLoggedIn()}},
-			// {field: 'cycleTimeSavingsExecutedTests', name: 'Cycle Time Savings (Executed Tests)', width: 150, enableCellEdit: false},
-			// {field: 'comment', name: 'Comment', width: 1000, cellEditableCondition: function(){return $scope.isLoggedIn()}},
 	    ]
 	  };
 
@@ -127,19 +136,59 @@ angular.module('cleaningDashboard').controller('HomeCtrl', [
 		$scope.hideErrorAlert = function() {
 			$('#gridErrorAlert').hide();
 		}
-	
+		console.log(service.appointments);
 		$scope.gridOptions.data = service.appointments;
 	}
 ]);
 
-function editAppointmentCtrl($scope, $uibModalInstance, service, grid, row, getClientNames) {
-	$scope.onSubmit = onSubmit;
-	function getClients() {
-		var clients = [];
-		for(var i=0;i<getClientNames.data.length;i++){
-			clients.push(getClientNames.data[i].name);
+function mainCalendarCtrl($scope, $rootScope, service, $uibModalInstance, clients, appointments) {
+	$scope.calendarView = 'month';
+	$scope.calendarDate = new Date();
+	var check = moment.utc();
+	var day = check.format('dddd');
+	var month = check.format('MMMM');
+	var year = check.format('YYYY');
+	$scope.calendarTitle = month + " " + year;
+	$scope.events = [];
+
+	for(var i=0; i<appointments.data.length; i++) {
+		var paid = appointments.data[i].paid;
+		var eventType = '';
+		if(paid) {
+			eventType = 'info';
+		} else {
+			eventType = 'important';
 		}
-		return clients;
+		var date = appointments.data[i].sharedDate;
+		// console.log(date)
+		var eventsObj = {
+			title: appointments.data[i].name,
+			startsAt: new Date(date),
+			type: eventType,
+			editable: false,
+			deletable: false, 
+			draggable: true, 
+			resizable: true,
+			incrementsBadgeTotal: true, 
+			cssClass: 'a-css-class-name',
+			allDay: false 
+		}
+		$scope.events.push(eventsObj);
+	}
+}
+
+function editAppointmentCtrl($scope, $uibModalInstance, service, grid, row, getClientNames, $http, getMaids) {
+	$scope.onSubmit = onSubmit;
+	function getMaidNames() {
+		var maids = [];
+		for(var i=0;i<getMaids.data.length;i++){
+			maids.push(getMaids.data[i].name);
+		}
+		return maids;
+	}
+	if(row.entity.sharedDate) {
+		var oldDate = row.entity.sharedDate;
+		$scope.sharedDate = new Date(row.entity.sharedDate);
 	}
 	$scope.schema = {
 	  	type: 'object',
@@ -147,11 +196,28 @@ function editAppointmentCtrl($scope, $uibModalInstance, service, grid, row, getC
 			name: {
 				type: 'string',
 				title: 'Client',
-				enum: getClients(),
+				readonly: true,
+			},
+			// date: {type: 'string', format: 'date', title: 'Appointment Date'},
+			address: {type: 'string', title: 'Address'},
+			maid1: {
+				type: 'string', 
+				title: 'Maid1',
+				enum: getMaidNames(),
 				placeholder: '--- Select One ---',
 			},
-			date: {type: 'string', format: 'date', title: 'Appointment Date'},
-			address: {type: 'string', title: 'Address'},
+			maid2: {
+				type: 'string', 
+				title: 'Maid2',
+				enum: getMaidNames(),
+				placeholder: '--- Select One ---',
+			},
+			maid3: {
+				type: 'string', 
+				title: 'Maid3',
+				enum: getMaidNames(),
+				placeholder: '--- Select One ---',
+			},
 			paid: {
 				type: 'boolean',
 				title: 'Paid',
@@ -169,12 +235,13 @@ function editAppointmentCtrl($scope, $uibModalInstance, service, grid, row, getC
   	};
 	$scope.entity = angular.copy(row.entity);
 	$scope.form = [
-		'name',
 		{
-		"key": "date",
-		"minDate": "1995-09-01",
+			"key" : "name",
 		},
 		'address',
+		'maid1',
+		'maid2',
+		'maid3',
 		'paid',
 		'maidpaid',
 		{
@@ -187,6 +254,19 @@ function editAppointmentCtrl($scope, $uibModalInstance, service, grid, row, getC
 	function onSubmit(form) {
 		$scope.$broadcast('schemaFormValidate');
 		if (form.$valid) {
+			console.log($scope.sharedDate);
+			if($scope.sharedDate) {
+				var isoDate = new Date($scope.sharedDate).toISOString();
+				$scope.entity.sharedDate = isoDate;
+				var data = {
+					oldDate: oldDate,
+					newDate: isoDate,
+					name: $scope.entity.name,
+				}
+				$http.post('/updateClientAppointments', data).then(function(result){
+					console.log(result);
+				});
+			}
 			service.updateAppointment($scope.entity);
 			row.entity = $scope.entity;
 			$uibModalInstance.dismiss('cancel');
@@ -194,9 +274,17 @@ function editAppointmentCtrl($scope, $uibModalInstance, service, grid, row, getC
 	}
 }
 
-function deleteAppointmentCtrl($scope, $uibModalInstance, service, grid, row) {
+function deleteAppointmentCtrl($scope, $uibModalInstance, service, grid, row, $http) {
 	$scope.deleteAppointment = function() {
 		service.deleteAppointment(row.entity);
+		console.log(row.entity);
+		var data = {
+			name: row.entity.name,
+			date: row.entity.sharedDate,
+		};
+		$http.post('/deleteClientAppointment', data).then(function(result){
+
+		});
 		$uibModalInstance.dismiss('cancel');
 	}
 }
@@ -279,6 +367,7 @@ function createClientCtrl($scope, $uibModalInstance, service, getMaids) {
 				placeholder: '--- Select One ---',
 			},
 			credit: {type: 'number', title: 'Credit'},
+			notes: {type: 'string', title: 'Notes'},
 		},
 		required: [
 			'name',
@@ -299,6 +388,11 @@ function createClientCtrl($scope, $uibModalInstance, service, getMaids) {
 			'key': 'requestedMaid',
 		},
 		'credit',
+		{
+			'key': 'notes',
+			'type': 'textarea',
+			'placeholder': 'Make a note'
+		},
 	];
 
 	function createClientModalError() {
@@ -389,6 +483,7 @@ function editClientCtrl($scope, $uibModalInstance, $uibModal, service, getMaids,
 				placeholder: '--- Select One ---',
 			},
 			credit: {type: 'number', title: 'Credit'},
+			notes: {type: 'string', title: 'Notes'}
 		},
 		required: [
 			'name',
@@ -403,6 +498,7 @@ function editClientCtrl($scope, $uibModalInstance, $uibModal, service, getMaids,
 		cleaningSchedule: getClientInfo.data.cleaningSchedule,
 		requestedMaid: getClientInfo.data.requestedMaid,
 		credit: getClientInfo.data.credit,
+		notes: getClientInfo.data.notes,
 	}
 	$scope.form = [
 		'name',
@@ -418,6 +514,11 @@ function editClientCtrl($scope, $uibModalInstance, $uibModal, service, getMaids,
 			'key': 'requestedMaid',
 		},
 		'credit',
+		{
+			'key': 'notes',
+			'type': 'textarea',
+			'placeholder': 'Make a note'
+		},
 	];
 
 	function hideEditClientModalError() {
@@ -432,7 +533,10 @@ function editClientCtrl($scope, $uibModalInstance, $uibModal, service, getMaids,
 	  		resolve: {
 	  			clientAssetGrid: function () { return $scope.grid; },
 				clientAssetRow: function () { return $scope.row; },
-				clientInfo: function () {return $scope.clientInfo; }
+				// clientInfo: function () {return $scope.clientInfo; }
+				clientInfo:  ['service', function(service){
+					return service.getClientInfo($scope.row.entity);
+				}],
 	  		}
 	  	});
 	}
@@ -446,12 +550,14 @@ function editClientCtrl($scope, $uibModalInstance, $uibModal, service, getMaids,
 		var year = check.format('YYYY');
 		$scope.calendarTitle = month + " " + year;
 		$scope.events = [];
-		// console.log(clientAssetRow.entity.paid);
-		console.log(clientAssetGrid.rows.length);
+		console.log(clientInfo.data);
 
 		for(var i=0; i<clientInfo.data.appointments.length;i++) {
+			// console.log(clientInfo.data.appointments[i]);
+
 			for(var j=0; j<clientAssetGrid.rows.length;j++) {
-				if(clientAssetGrid.rows[j].entity.name === clientInfo.data.name && clientAssetGrid.rows[j].entity.date === clientInfo.data.appointments[i]) {
+				// console.log(clientAssetGrid.rows[j].entity.sharedDate);
+				if(clientAssetGrid.rows[j].entity.name === clientInfo.data.name && clientAssetGrid.rows[j].entity.sharedDate === clientInfo.data.appointments[i]) {
 					var paid = clientAssetGrid.rows[j].entity.paid;
 					var eventType = '';
 					if(paid) {
@@ -460,10 +566,10 @@ function editClientCtrl($scope, $uibModalInstance, $uibModal, service, getMaids,
 						eventType = 'important';
 					}
 					var date = clientInfo.data.appointments[i];
-					date = date.substring(0, date.indexOf("T"));
+					// console.log(date)
 					var eventsObj = {
 						title: clientInfo.data.name,
-						startsAt: moment(date).utc(),
+						startsAt: new Date(date),
 						type: eventType,
 						editable: false,
 						deletable: false, 
@@ -477,20 +583,6 @@ function editClientCtrl($scope, $uibModalInstance, $uibModal, service, getMaids,
 				}
 			}
 		}
-		// $scope.events = [
-		// 	{
-		// 		title: 'My event title', // The title of the event
-		// 		type: 'info', // The type of the event (determines its color). Can be important, warning, info, inverse, success or special
-		// 		startsAt: moment([2015, 5, 10]), // A javascript date object for when the event starts
-		// 		editable: false, // If edit-event-html is set and this field is explicitly set to false then dont make it editable.
-		// 		deletable: false, // If delete-event-html is set and this field is explicitly set to false then dont make it deleteable
-		// 		draggable: true, //Allow an event to be dragged and dropped
-		// 		resizable: true, //Allow an event to be resizable
-		// 		incrementsBadgeTotal: true, //If set to false then will not count towards the badge total amount on the month and year view
-		// 		cssClass: 'a-css-class-name', //A CSS class (or more, just separate with spaces) that will be added to the event when it is displayed on each view. Useful for marking an event as selected / active etc
-		// 		allDay: false // set to true to display the event as an all day event on the day view
-		// 	},
-		// ];
 	}
 
 	function onSubmit(form) {
@@ -514,7 +606,7 @@ function editClientCtrl($scope, $uibModalInstance, $uibModal, service, getMaids,
 }
 
 
-function createAppointmentCtrl($scope, $uibModalInstance, service, getClientNames) {
+function createAppointmentCtrl($scope, $uibModalInstance, service, getClientNames, getMaids) {
 	$scope.onSubmit = onSubmit;
 	function getClients() {
 		var clients = [];
@@ -522,6 +614,13 @@ function createAppointmentCtrl($scope, $uibModalInstance, service, getClientName
 			clients.push(getClientNames.data[i].name);
 		}
 		return clients;
+	}
+	function getMaidNames() {
+		var maids = [];
+		for(var i=0;i<getMaids.data.length;i++){
+			maids.push(getMaids.data[i].name);
+		}
+		return maids;
 	}
 	$scope.schema = {
 	  	type: 'object',
@@ -532,8 +631,25 @@ function createAppointmentCtrl($scope, $uibModalInstance, service, getClientName
 				enum: getClients(),
 				placeholder: '--- Select One ---',
 			},
-			date: {type: 'string', format: 'date', title: 'Appointment Date'},
 			address: {type: 'string', title: 'Address'},
+			maid1: {
+				type: 'string', 
+				title: 'Maid1',
+				enum: getMaidNames(),
+				placeholder: '--- Select One ---',
+			},
+			maid2: {
+				type: 'string', 
+				title: 'Maid2',
+				enum: getMaidNames(),
+				placeholder: '--- Select One ---',
+			},
+			maid3: {
+				type: 'string', 
+				title: 'Maid3',
+				enum: getMaidNames(),
+				placeholder: '--- Select One ---',
+			},
 			paid: {
 				type: 'boolean',
 				title: 'Paid',
@@ -549,14 +665,24 @@ function createAppointmentCtrl($scope, $uibModalInstance, service, getClientName
 			'date',
 		]
   	};
+ //  	var clientAddress;
+
 	$scope.entity = {};
 	$scope.form = [
-		'name',
 		{
-		"key": "date",
-		"minDate": "1995-09-01",
+			'key': 'name',
+			'onChange': function(val, form) {
+				for(var i=0;i<getClientNames.data.length;i++){
+					if(val === getClientNames.data[i].name) {
+						$scope.entity.address = getClientNames.data[i].address;						
+					}
+				}
+			}
 		},
 		'address',
+		'maid1',
+		'maid2',
+		'maid3',
 		'paid',
 		'maidpaid',
 		{
@@ -569,6 +695,10 @@ function createAppointmentCtrl($scope, $uibModalInstance, service, getClientName
 	function onSubmit(form) {
 		$scope.$broadcast('schemaFormValidate');
 		if (form.$valid) {
+			if($scope.sharedDate) {
+				var isoDate = new Date($scope.sharedDate).toISOString();
+				$scope.entity.sharedDate = isoDate;	
+			}
 			service.createAppointment($scope.entity);
 			$uibModalInstance.dismiss('cancel');
 		}
@@ -579,7 +709,8 @@ function createAppointmentCtrl($scope, $uibModalInstance, service, getClientName
 angular.module('cleaningDashboard').filter('formatDateTime', function () {
   return function (value) {
   	if(value) {
-  		var v = moment(value).utc().format('MM/DD/YYYY');
+  		var v = moment(value).format('MMMM Do YYYY, h:mm:ss a'); // June 8th 2016, 11:50:41 am;
+
   		return v;
   	}
   };

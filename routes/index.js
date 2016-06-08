@@ -33,8 +33,11 @@ router.get('/appointments', function(req, res) {
 router.post('/appointments', function(req, res) {
 	var appointmentJSON = {
 		name: req.body.name,
-		date: req.body.date,
+		sharedDate: req.body.sharedDate,
 		address: req.body.address,
+		maid1: req.body.maid1,
+		maid2: req.body.maid2,
+		maid3: req.body.maid3,
 		paid: req.body.paid,
 		maidpaid: req.body.maidpaid,
 		notes: req.body.notes,
@@ -54,8 +57,11 @@ router.get('/appointments/:appointment', function(req, res){
 router.put('/appointments/:appointment', function(req, res){
 	Appointments.update({'_id': req.appointment._id}, {$set: {
 		'name': req.body.name,
-		'date': req.body.date,
+		'sharedDate': req.body.sharedDate,
 		'address': req.body.address,
+		'maid1': req.body.maid1,
+		'maid2': req.body.maid2,
+		'maid3': req.body.maid3,
 		'paid': req.body.paid,
 		'maidpaid': req.body.maidpaid,
 		'notes': req.body.notes,
@@ -69,7 +75,7 @@ router.put('/appointments/:appointment', function(req, res){
 router.put('/updateAppointmentName', function(req, res){
 	Appointments.update({'name': req.query.oldName}, {$set: {
 		'name': req.query.newName,
-	}}, function(err, appointment){
+	}}, {multi: true}, function(err, appointment){
 		if(err){console.log(err);}
 		console.log(appointment);
 		res.json({message: 'Successfully updated appointment'});
@@ -176,6 +182,7 @@ router.post('/clients', function(req, res) {
 		cleaningSchedule: req.body.cleaningSchedule,
 		requestedMaid: req.body.requestedMaid,
 		credit: req.body.credit,
+		notes: req.body.notes,
 	}
 
 	var client = new Clients(clientJSON);
@@ -207,6 +214,7 @@ router.put('/clients/:client', function(req, res){
 			'cleaningSchedule': req.body.cleaningSchedule,
 			'requestedMaid': req.body.requestedMaid,
 			'credit': req.body.credit,
+			'notes': req.body.notes,
 		}}, function(err, client){
 			if(err){console.log(err);}
 			console.log(client);
@@ -225,6 +233,7 @@ router.put('/clients/:client', function(req, res){
 					'cleaningSchedule': req.body.cleaningSchedule,
 					'requestedMaid': req.body.requestedMaid,
 					'credit': req.body.credit,
+					'notes': req.body.notes,
 				}}, function(err, client){
 					if(err){console.log(err);}
 					console.log(client);
@@ -239,12 +248,33 @@ router.put('/clients/:client', function(req, res){
 });
 
 router.post('/pushToClientsArr', function(req, res){
+	console.log(req.body.sharedDate);
 	Clients.update({name: req.body.name },
-     {$push: { 'appointments' : req.body.date }},{upsert:true}, function(err, data) { 
+     {$push: { 'appointments' : req.body.sharedDate }},{upsert:true}, function(err, data) { 
     	if(err){console.log(err);}
     	res.json(data);	   
 	});
 });
+
+router.post('/updateClientAppointments', function(req, res){
+	console.log(req.body.oldDate);
+	console.log(req.body.newDate);
+	Clients.update({name: req.body.name, appointments: req.body.oldDate},
+     {$set: { 'appointments.$': req.body.newDate}}, function(err, data) { 
+    	if(err){console.log(err);}
+    	res.json(data);
+	});
+});
+
+router.post('/deleteClientAppointment', function(req, res){
+	console.log(req.body.date);
+	Clients.update({name: req.body.name},
+     {$pull: { 'appointments': req.body.date}}, function(err, data) { 
+    	if(err){console.log(err);}
+    	res.json(data);
+	});
+});
+
 
 router.delete('/clients/:client', function(req, res){
 	Clients.remove({'_id': req.client._id}, function(err, client){

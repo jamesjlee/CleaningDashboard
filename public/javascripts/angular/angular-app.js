@@ -1,4 +1,4 @@
-var app = angular.module('cleaningDashboard', ['mwl.calendar', 'ui.router', 'ui.bootstrap', 'ui.grid', 'ui.grid.resizeColumns','ui.grid.pagination', 'ui.grid.pinning', 'ui.grid.moveColumns', 'ui.grid.edit', 'schemaForm', 'mgcrea.ngStrap', 'ngSanitize']);
+var app = angular.module('cleaningDashboard', ['mwl.calendar', 'ui.router', 'ui.bootstrap', 'ui.grid', 'ui.grid.resizeColumns','ui.grid.pagination', 'ui.grid.pinning', 'ui.grid.moveColumns', 'ui.grid.edit', 'schemaForm', 'mgcrea.ngStrap', 'mgcrea.ngStrap.timepicker', 'mgcrea.ngStrap.datepicker', 'ngSanitize']);
 
 app.run(function($rootScope){
 	$rootScope
@@ -37,3 +37,13 @@ app.config([
 		$urlRouterProvider.otherwise('home');
 	}
 ]);
+
+app.config(
+	function(calendarConfig){
+
+		calendarConfig.dateFormatter = 'moment';
+		calendarConfig.allDateFormats.moment.date.hour = 'hh:mm A';
+		calendarConfig.allDateFormats.moment.date.time = 'hh:mm A';
+		console.log(calendarConfig);
+
+});

@@ -9,6 +9,7 @@ var ClientsSchema = new mongoose.Schema({
 	requestedMaid: String,
 	credit: {type: Number, default: null},
 	appointments: [Date],
+	notes: String,
 });
 
 mongoose.model('Clients', ClientsSchema);
