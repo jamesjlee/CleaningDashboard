@@ -44,6 +44,4 @@ app.config(
 		calendarConfig.dateFormatter = 'moment';
 		calendarConfig.allDateFormats.moment.date.hour = 'hh:mm A';
 		calendarConfig.allDateFormats.moment.date.time = 'hh:mm A';
-		console.log(calendarConfig);
-
 });

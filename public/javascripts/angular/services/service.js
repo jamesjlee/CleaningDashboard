@@ -143,7 +143,7 @@ angular.module('cleaningDashboard').factory('service', [
 							break;
 						}
 					}
-
+					
 					$http.put('/updateAppointmentName?oldName='+oldName+'&newName='+newName).success(function(data){
 						console.log(data)
 					});
@@ -164,7 +164,6 @@ angular.module('cleaningDashboard').factory('service', [
 				console.log(data.message);
 			});
 		}
-
 		return o;
 	}
 ]);

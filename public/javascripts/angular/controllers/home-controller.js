@@ -6,7 +6,8 @@ angular.module('cleaningDashboard').controller('HomeCtrl', [
 	'$uibModal',
 	'$rootScope',
 	'service',
-	function($scope, $state, $http, $timeout, $uibModal, $rootScope, service) {
+	'$timeout',
+	function($scope, $state, $http, $timeout, $uibModal, $rootScope, service, $timeout) {
 		$scope.editAppointment = function(grid, row) {
 			$uibModal.open({
 			  templateUrl: '/partials/edit-appointment-modal.html',
@@ -66,7 +67,7 @@ angular.module('cleaningDashboard').controller('HomeCtrl', [
 			var entity = angular.copy(row.entity);
 			$uibModal.open({
 		      templateUrl: '/partials/edit-client-modal.html',
-		      controller: ['$scope', '$uibModalInstance', '$uibModal', 'service', 'getMaids', 'getClientInfo', 'grid', 'row', editClientCtrl],
+		      controller: ['$scope', '$uibModalInstance', '$uibModal', 'service', 'getMaids', 'getClientInfo', 'grid', 'row', 'Excel', '$timeout', editClientCtrl],
 		      resolve: {
 		      	getMaids:  ['service', function(service){
 					return service.getMaids();
@@ -116,15 +117,15 @@ angular.module('cleaningDashboard').controller('HomeCtrl', [
           });
 	    },
 	    columnDefs: [
-			{field: 'buttons', name: '', cellTemplate: '/partials/buttons.html', enableCellEdit: false, enableFiltering: false, pinnedLeft: true, width: 65},
+			{field: 'buttons', name: '', cellTemplate: '/partials/buttons.html', enableCellEdit: false, enableFiltering: false, pinnedLeft: true, width: '5%'},
     		{field: 'name', name: 'Name', cellTemplate: '/partials/client-profile-modal.html', enableCellEdit: false, pinnedLeft: true, width: '25%'},
     		{field: 'sharedDate', name: 'Appointment (yyyy-mm-dd)', cellFilter: 'formatDateTime', enableCellEdit: false, pinnedLeft: true, width: '15%'},
     		{field: 'address', name: 'Address', enableCellEdit: false, width: '25%'},
     		{field: 'maid1', name: 'Maid 1', enableCellEdit: false, width: '10%'},
     		{field: 'maid2', name: 'Maid 2', enableCellEdit: false, width: '10%'},
     		{field: 'maid2', name: 'Maid 3', enableCellEdit: false, width: '10%'},
-    		{field: 'paid', name: 'Paid', enableCellEdit: false, width: '10%'},
-    		{field: 'maidpaid', name: 'Maid Paid', enableCellEdit: false, width: '10%'},
+    		{field: 'paid', name: 'Paid (true/false)', cellFilter: 'paidNotpaid', enableCellEdit: false, width: '10%'},
+    		{field: 'maidpaid', name: 'Maid Paid (true/false)', cellFilter: 'paidNotpaid', enableCellEdit: false, width: '10%'},
     		{field: 'notes', name: 'Notes', enableCellEdit: false, width: '50%'},
 	    ]
 	  };
@@ -256,7 +257,7 @@ function editAppointmentCtrl($scope, $uibModalInstance, service, grid, row, getC
 		if (form.$valid) {
 			console.log($scope.sharedDate);
 			if($scope.sharedDate) {
-				var isoDate = new Date($scope.sharedDate).toISOString();
+				 var isoDate = new Date($scope.sharedDate).toISOString();
 				$scope.entity.sharedDate = isoDate;
 				var data = {
 					oldDate: oldDate,
@@ -414,7 +415,7 @@ function createClientCtrl($scope, $uibModalInstance, service, getMaids) {
 	}
 }
 
-function editClientCtrl($scope, $uibModalInstance, $uibModal, service, getMaids, getClientInfo, grid, row) {
+function editClientCtrl($scope, $uibModalInstance, $uibModal, service, getMaids, getClientInfo, grid, row, Excel, $timeout) {
 	var oldName = row.entity.name;
 	$scope.grid = grid;
 	$scope.row = row;
@@ -422,6 +423,37 @@ function editClientCtrl($scope, $uibModalInstance, $uibModal, service, getMaids,
 	$scope.clientInfo = getClientInfo;
 	$scope.hideEditClientModalError = hideEditClientModalError;
 	$scope.showCalendar = showCalendar;
+	$scope.allInfo = [];
+
+	console.log(grid.rows);
+	for(var i=0;i<grid.rows.length;i++) {
+		if(grid.rows[i].entity.name === row.entity.name) {
+			var obj = {
+				name: $scope.grid.rows[i].entity.name,
+				address: $scope.grid.rows[i].entity.address,
+				cleaningCost: getClientInfo.data.cleaningCost,
+				sharedDate: $scope.grid.rows[i].entity.sharedDate,
+				paid: $scope.grid.rows[i].entity.paid,
+			}
+			$scope.allInfo.push(obj);
+		}
+	}
+
+	$scope.exportToExcel = function(tableId){
+        var exportHref=Excel.tableToExcel(tableId,'report');
+		var a = document.createElement('a');
+		a.href = exportHref;
+		a.download = oldName + '.xls';
+		a.click();
+    }
+
+    $scope.exportToExcelHistory = function(tableId) {
+    	var exportHref=Excel.tableToExcel(tableId,'report');
+		var a = document.createElement('a');
+		a.href = exportHref;
+		a.download = oldName + '-history.xls';
+		a.click();
+    }
 
 	$scope.deleteClient = function() {
 		$uibModalInstance.dismiss('cancel');
@@ -714,4 +746,25 @@ angular.module('cleaningDashboard').filter('formatDateTime', function () {
   		return v;
   	}
   };
+});
+
+angular.module('cleaningDashboard').factory('Excel',function($window){
+    var uri='data:application/vnd.ms-excel;base64,',
+        template='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>',
+        base64=function(s){return $window.btoa(unescape(encodeURIComponent(s)));},
+        format=function(s,c){return s.replace(/{(\w+)}/g,function(m,p){return c[p];})};
+    return {
+        tableToExcel:function(tableId,worksheetName){
+            var table=$(tableId),
+                ctx={worksheet:worksheetName,table:table.html()},
+                href=uri+base64(format(template,ctx));
+            return href;
+        }
+    };
+});
+
+angular.module('cleaningDashboard').filter('paidNotpaid', function () {
+  return function(input) {
+  	return input ? 'Paid' : 'Not Paid';
+  }
 });

@@ -14,8 +14,44 @@
             <span>{{ error }}</span>
         <i class="fa fa-times" ng-click="hideEditClientModalError()" style="float: right"></i>
       </div>
-      <button class="btn btn-danger" style="float:left;" ng-click="deleteClient()">Delete Client</button>
+      <button class="btn btn-danger" style="float:left;" ng-click="deleteClient()"><i class="fa fa-trash"> Delete Client</i></button>
+      <button class="btn btn-primary" style="float:left;" ng-click="exportToExcel('#clientTable')"><i class="fa fa-file-excel-o"> Export</i></button>
+      <button class="btn btn-primary" style="float:left;" ng-click="exportToExcelHistory('#historyTable')"><i class="fa fa-file-excel-o"> History</i></button>
       <label for="submit-form" class="btn btn-primary">Submit</label>
       <button class="btn btn-primary" ng-click="$close()">Cancel</button>
   </div>
 </div>
+
+<table class="table" id="clientTable" ng-hide="true">
+    <tr>
+        <th>Client Name</th>
+        <th>Address</th>
+        <th>Cleaning Cost</th>
+        <th>Date</th>
+        <th>Paid</th>
+    </tr>
+    <tr ng-repeat="client in allInfo" ng-if="client.paid === false">
+        <td>{{client.name}}</td>
+        <td>{{client.address}}</td>
+        <td>{{client.cleaningCost}}</td>
+        <td>{{client.sharedDate | date:'MM/dd/yyyy @ h:mma'}}</td>
+        <td>{{client.paid | paidNotpaid}}</td>
+    </tr>
+</table>
+
+<table class="table" id="historyTable" ng-hide="true">
+    <tr>
+        <th>Client Name</th>
+        <th>Address</th>
+        <th>Cleaning Cost</th>
+        <th>Date</th>
+        <th>Paid</th>
+    </tr>
+    <tr ng-repeat="client in allInfo">
+        <td>{{client.name}}</td>
+        <td>{{client.address}}</td>
+        <td>{{client.cleaningCost}}</td>
+        <td>{{client.sharedDate | date:'MM/dd/yyyy @ h:mma'}}</td>
+        <td>{{client.paid | paidNotpaid}}</td>
+    </tr>
+</table>
